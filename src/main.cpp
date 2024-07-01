@@ -19,6 +19,8 @@
 #include "app.hpp"
 #include "contacts.hpp"
 #include <iostream>
+#include <SerialManager.hpp>
+#include "../lib/tasks/src/delay.hpp"
 
 using namespace gui::elements;
 
@@ -76,6 +78,7 @@ void setup()
     graphics::init();
     storage::init();
 
+
     graphics::setScreenOrientation(graphics::PORTRAIT);
 
     ThreadManager::init();
@@ -95,6 +98,7 @@ void setup()
 
     #ifdef ESP_PLATFORM
     ThreadManager::new_thread(CORE_BACK, &ringingVibrator);
+    ThreadManager::new_thread(CORE_BACK, &serialcom::SerialManager::serialLoop);
     #endif
 
     eventHandlerBack.setInterval(

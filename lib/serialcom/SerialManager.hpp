@@ -3,9 +3,11 @@
 #include <string>
 #include <Command.hpp>
 #include <shared_mutex>
+#include <memory>
 #include "config.h"
 
-namespace serialcom {
+namespace serialcom
+{
     class SerialManager
     {
     public:
@@ -16,29 +18,28 @@ namespace serialcom {
 
         void log(std::string message);
 
-        void commandLog(const std::string& message) const;
+        void commandLog(const std::string &message) const;
 
-        #ifdef ESP_PLATFORM
+#ifdef ESP_PLATFORM
         static void serialLoop(void *);
-        #else
+#else
         static void serialLoop();
-        #endif
+#endif
 
-        private:
-
+    private:
         char outputBuffer[MAX_OUTPUT_SIZE] = {'\0'};
         uint32_t outputSize = 0;
 
-        #ifdef __linux__
+#ifdef __linux__
         int serialfd;
-        #endif
+#endif
 
         bool newData = false;
         bool isOutputingCommand = false;
-        char current_input[INPUT_MAX_SIZE];   // an array to store the received data
+        char current_input[INPUT_MAX_SIZE]; // an array to store the received data
         void flushOutputBuffer();
         void getInputCommand();
-        void println(const std::string& log) const;
+        void println(const std::string &log) const;
         bool isNewInputAvailable() const;
     };
 }

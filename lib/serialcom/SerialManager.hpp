@@ -29,6 +29,10 @@ namespace serialcom {
         char outputBuffer[MAX_OUTPUT_SIZE] = {'\0'};
         uint32_t outputSize = 0;
 
+        #ifdef __linux__
+        int serialfd;
+        #endif
+
         bool newData = false;
         bool isOutputingCommand = false;
         char current_input[INPUT_MAX_SIZE];   // an array to store the received data

@@ -5,6 +5,11 @@
 #else
 #include <iostream>
 #endif
+#ifdef __linux__
+#include <fcntl.h>
+#include <unistd.h>
+#endif
+#include <memory>
 
 namespace serialcom {
     const std::shared_ptr<SerialManager> SerialManager::sharedInstance = std::make_shared<SerialManager>();
@@ -13,11 +18,24 @@ namespace serialcom {
         #ifdef ESP_PLATFORM
         Serial.begin(115200);
         #endif
+        #ifdef __linux__
+        char* path = getenv("PAXO_SERIAL");
+        if (path == NULL) {
+            this->serialfd = 0;
+        } else {
+            this->serialfd = open(path, O_RDWR);
+        }
+        #endif
     }
 
     SerialManager::~SerialManager() {
         #ifdef ESP_PLATFORM
         Serial.end();
+        #endif
+        #ifdef __linux__
+        if (this->serialfd != 0) {
+            close(this->serialfd);
+        }
         #endif
     }
 

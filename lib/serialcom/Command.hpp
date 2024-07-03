@@ -3,33 +3,32 @@
 #include <cstddef>
 #include <unordered_map>
 #include <optional>
+#include <string>
 
-namespace serialcom {
+namespace serialcom
+{
     const size_t MAX_COMMMAND_TYPE_SIZE = 16;
     const size_t MAX_ARGUMENT_SIZE = 512;
-    const size_t MAX_COMMAND_ARGUMENTS_COUNT = 3;
+    const size_t MAX_COMMAND_ARGUMENTS_COUNT = 5;
     constexpr size_t INPUT_MAX_SIZE = MAX_COMMMAND_TYPE_SIZE + MAX_COMMAND_ARGUMENTS_COUNT * MAX_ARGUMENT_SIZE;
 
-    struct Command {
-        enum class CommandType {
-            info,
-            echo,
-            apps,
-            files,
-            elevate,
-            lte,
+    typedef void (*CommandCaller)(bool program_mode, char *args[]);
 
-            unknown
-        };
+    struct CommandMeta
+    {
+        std::string name;
+        bool isNested;
+        CommandCaller exec;
+    };
 
-        // a static unordered map between the raw strings of the command types and the CommandType enum
-        
-        static std::unordered_map<CommandType, std::string> command_types_raw_strings;
-        
-        CommandType type;
-
+    struct Command
+    {
         Command(char (&input)[INPUT_MAX_SIZE]);
 
-        char arguments[MAX_COMMAND_ARGUMENTS_COUNT][MAX_ARGUMENT_SIZE] = {'\0'};
+        char *arguments[MAX_COMMAND_ARGUMENTS_COUNT + 1];
+
+        int argoffset; // The length of the command name in the arguments array
+
+        CommandCaller exec; // Command to be executed
     };
 }

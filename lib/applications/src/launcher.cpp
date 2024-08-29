@@ -6,6 +6,8 @@
 #include <gui.hpp>
 #include <GuiManager.hpp>
 
+#include <../../network/network.hpp>
+
 
 /**
  * Helper fonction
@@ -102,10 +104,8 @@ int launcher()
      */
     std::vector<gui::ElementBase*> apps;
 
-
     // List contenant les app
-    VerticalList* winListApps = new VerticalList(0, 164, 320,316);
-    //winListApps->setBackgroundColor(COLOR_GREY);
+    VerticalList* winListApps = new VerticalList(0, 150, 320, 316);
     win.addChild(winListApps);
 
     // Placement des app dans l'écran
@@ -116,19 +116,26 @@ int launcher()
             continue;
 
 //        Box* box = new Box(60 + 119 * (placementIndex%2), 164 + 95 * int(placementIndex/2), 80, 80);
-        Box* box = new Box(60 + 119 * (placementIndex%2), 95 * int(placementIndex/2), 80, 80);
+        Box* box = new Box(35 + 85 * (placementIndex%3), 85 * int(placementIndex/3), 80, 80);
+        box->setRadius(10);
+        box->setBackgroundColor(COLOR_LIGHT_GREY);
 
-        Image* img = new Image(AppManager::appList[i].path / "../icon.png", 20, 6, 40, 40);
+        Image* img = new Image(AppManager::appList[i].path / "../icon.png", 20, 6, 40, 40, COLOR_LIGHT_GREY);
         img->load();
+        //img->setTransparency(true);
+        img->setTransparentColor(COLOR_WHITE);
         box->addChild(img);
 
-        Label* text = new Label(0, 46, 80, 34);
+        Label* text = new Label(5, 46, 70, 34);
+//        Label* text = new Label(0, 46, 80, 34);
         text->setText(AppManager::appList[i].name);
         text->setVerticalAlignment(Label::Alignement::CENTER);
         text->setHorizontalAlignment(Label::Alignement::CENTER);
+        text->setBackgroundColor(COLOR_LIGHT_GREY);
         text->setFontSize(16);
         box->addChild(text);
 
+        // Gestion des notifications de nouveaux messages
         storage::Path notifs = (AppManager::appList[i].path / ".." / "unread.txt");
         if(notifs.exists())
         {
@@ -152,16 +159,21 @@ int launcher()
         placementIndex++;
     }
 
+/************************************
+ * test pour le network
+ ***********************************/
+
     Label* networkLabel = new Label(20, 40, 20, 20);
     networkLabel->setBackgroundColor(COLOR_DARK);
     networkLabel->setText("Network");
     networkLabel->setTextColor(COLOR_WHITE);
     networkLabel->setFontSize(16);
     win.addChild(networkLabel);
-
+  
     Label* progressLabel = new Label(10, 400, 0, 20);
     progressLabel->setBackgroundColor(COLOR_SUCCESS);
     win.addChild(progressLabel);
+  // //////////////////////////////////////////////////
 
     while (!hardware::getHomeButton() && AppManager::isAnyVisibleApp() == false)
     {
@@ -186,7 +198,11 @@ int launcher()
         }
 
         eventHandlerApp.update();
-        if (networkLabel->isTouched())
+      /************************************
+       * test pour le network
+       ***********************************/
+
+       if (networkLabel->isTouched())
         {
             std::cout << "connection status " << network::NetworkManager::sharedInstance->isConnected() << std::endl;
 
@@ -249,6 +265,7 @@ int launcher()
 
             postTask->resume();
         }
+        // //////////////////////////////////////////////////
         win.updateAll();
 
         AppManager::loop();

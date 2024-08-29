@@ -47,8 +47,8 @@ std::shared_ptr<LuaHttpClient> LuaNetwork::createHttpClient()
 LuaFile::LuaFile(storage::Path filename, storage::Path manifest)
     :lua_gui(this),
     lua_storage(this),
-    lua_time(this)/*,
-    lua_network(this)*/
+    lua_time(this)
+    //lua_network(this)
 {
     this->filename = filename;
     this->manifest = manifest;
@@ -152,6 +152,19 @@ void LuaFile::load()
     lua.set_function("nonothing", []() {
     });
 
+
+        lua.open_libraries(sol::lib::string);
+
+    if (perms.acces_web)   // si web est autorisé
+    {
+//        lua.open_libraries(sol::lib::string);
+       lua.new_usertype<LuaNetwork>("network",
+            "callURL", &LuaNetwork::callURL
+        );
+        lua["network"] = &lua_network;
+    }
+
+
     if (perms.acces_hardware)   // si hardware est autorisé
     {
         lua.new_usertype<LuaHardware>("hardware",
@@ -192,6 +205,7 @@ void LuaFile::load()
             "new", sol::constructors<LuaJson(std::string)>(),
             "get", &LuaJson::get,
             "is_null", &LuaJson::is_null,
+            "at", &LuaJson::at,
             "size", &LuaJson::size,
             "has_key", &LuaJson::has_key,
             "remove", &LuaJson::remove,
@@ -230,7 +244,8 @@ void LuaFile::load()
                     return gui->image(parent, path, x, y, width, height, COLOR_WHITE);
                 },
                 &LuaGui::image
-            ),
+            ),          
+//            "image", &LuaGui::image,
             "label", &LuaGui::label,
             "input", &LuaGui::input,
             "button", &LuaGui::button,
@@ -242,6 +257,7 @@ void LuaFile::load()
             "checkbox", &LuaGui::checkbox,
             "del", &LuaGui::del,
             "setWindow", &LuaGui::setMainWindow,
+            "getWindow", &LuaGui::getMainWindow,
             "keyboard", &LuaGui::keyboard,
             "showInfoMessage", &LuaGui::showInfoMessage,
             "showWarningMessage", &LuaGui::showWarningMessage,
@@ -281,6 +297,7 @@ void LuaFile::load()
 
         lua.new_usertype<LuaBox>("LuaBox",
             "setRadius", &LuaBox::setRadius,
+            "clear", &LuaBox::clear,
             sol::base_classes, sol::bases<LuaWidget>());
 
         lua.new_usertype<LuaCanvas>("LuaCanvas",
@@ -302,7 +319,8 @@ void LuaFile::load()
             sol::base_classes, sol::bases<LuaWidget>());
 
         lua.new_usertype<LuaImage>("LuaImage",
-            sol::base_classes, sol::bases<LuaWidget>());
+            "setTransparentColor", &LuaImage::setTransparentColor,
+            sol::base_classes, sol::bases<LuaWidget>());            
 
         lua.new_usertype<LuaLabel>("LuaLabel",
             "setText", &LuaLabel::setText,
@@ -348,10 +366,12 @@ void LuaFile::load()
         lua.new_usertype<LuaVerticalList>("LuaVList",
             "setIndex", &LuaVerticalList::setIndex,
             "setSpaceLine", &LuaVerticalList::setSpaceLine,
+            "clear",&LuaVerticalList::clear,
             sol::base_classes, sol::bases<LuaWidget>());
 
         lua.new_usertype<LuaHorizontalList>("LuaHList",
-            //"add", &LuaHorizontalList::add,
+//            "add", &LuaHorizontalList::add,
+            "clear",&LuaHorizontalList::clear,
             sol::base_classes, sol::bases<LuaWidget>());
 
         lua.set("LEFT_ALIGNMENT", Label::Alignement::LEFT);

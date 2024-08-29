@@ -11,8 +11,10 @@ void LuaWidget::init(gui::ElementBase* obj, LuaWidget* parent)
 
 LuaWidget::~LuaWidget()
 {
-    if(rootOfDelete == nullptr)
+    if(rootOfDelete == nullptr) {
         rootOfDelete = this;
+    }
+        
 
     for (LuaWidget* child : children)
     {
@@ -40,7 +42,7 @@ LuaWidget::~LuaWidget()
         {
             if (reParent->m_children[i] == reWidget)
             {
-                reParent->m_children.erase(reParent->m_children.begin() + i);
+                  reParent->m_children.erase(reParent->m_children.begin() + i);
                 break;
             }
         }

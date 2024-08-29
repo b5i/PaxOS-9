@@ -9,6 +9,7 @@ class LuaBox : public LuaWidget
     LuaBox(LuaWidget* parent, int x, int y, int width, int height);
 
     void setRadius(uint16_t radius);
+    void clear();
 
     Box* widget = nullptr;
 };

@@ -10,3 +10,10 @@ void LuaBox::setRadius(uint16_t radius)
 {
     this->widget->setRadius(radius);
 }
+
+void LuaBox::clear() { 
+
+        while (!this->children.empty()) {
+            delete this->children[0];
+        }       
+}

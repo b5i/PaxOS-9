@@ -44,6 +44,13 @@ LuaCanvas* LuaGui::canvas(LuaWidget* parent, int x, int y, int width, int height
     w->gui = this;
     return w;
 }
+/*
+LuaImage* LuaGui::image(LuaWidget* parent, std::string path, int x, int y, int width, int height)
+{
+    image(parent, path, x, y,width, height,COLOR_WHITE);
+}
+*/
+
 
 LuaImage* LuaGui::image(LuaWidget* parent, std::string path, int x, int y, int width, int height, color_t background)
 {
@@ -180,6 +187,11 @@ void LuaGui::setMainWindow(LuaWindow* window) {
     this->mainWindow = window; 
     AppManager::askGui(this->lua); 
 }
+
+LuaWindow* LuaGui::getMainWindow() {
+    return this->mainWindow; 
+}
+
 
 void LuaGui::showErrorMessage(const std::string& msg ){
 

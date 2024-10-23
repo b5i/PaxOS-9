@@ -10,6 +10,7 @@
 #include <GuiManager.hpp>
 #include <standby.hpp>
 #include <threads.hpp>
+#include "../micropython/src/micropython.hpp"
 
 
 /**
@@ -89,6 +90,7 @@ namespace applications::launcher {
 void applications::launcher::init() {
     launcherWindow = std::make_shared<Window>();
     targetApp = nullptr;
+    executePython();
 }
 
 void applications::launcher::update() {
